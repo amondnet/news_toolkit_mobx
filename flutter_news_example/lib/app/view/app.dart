@@ -1,11 +1,13 @@
 import 'package:ads_consent_client/ads_consent_client.dart';
 import 'package:analytics_repository/analytics_repository.dart';
 import 'package:app_ui/app_ui.dart';
+import 'package:provider/provider.dart';
 import 'package:article_repository/article_repository.dart';
 import 'package:flow_builder/flow_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_news_example/ads/ads.dart';
+import 'package:flutter_news_example/ads/store/full_screen_ads_store.dart';
 import 'package:flutter_news_example/analytics/analytics.dart';
 import 'package:flutter_news_example/app/app.dart';
 import 'package:flutter_news_example/l10n/l10n.dart';
@@ -61,42 +63,45 @@ class App extends StatelessWidget {
         RepositoryProvider.value(value: _adsConsentClient),
       ],
       child: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (_) => AppBloc(
-              userRepository: _userRepository,
-              notificationsRepository: _notificationsRepository,
-              user: _user,
-            )..add(const AppOpened()),
-          ),
-          BlocProvider(create: (_) => ThemeModeBloc()),
-          BlocProvider(
-            create: (_) => LoginWithEmailLinkBloc(
-              userRepository: _userRepository,
+          providers: [
+            BlocProvider(
+              create: (_) => AppBloc(
+                userRepository: _userRepository,
+                notificationsRepository: _notificationsRepository,
+                user: _user,
+              )..add(const AppOpened()),
             ),
-            lazy: false,
-          ),
-          BlocProvider(
-            create: (context) => AnalyticsBloc(
-              analyticsRepository: _analyticsRepository,
-              userRepository: _userRepository,
+            BlocProvider(create: (_) => ThemeModeBloc()),
+            BlocProvider(
+              create: (_) => LoginWithEmailLinkBloc(
+                userRepository: _userRepository,
+              ),
+              lazy: false,
             ),
-            lazy: false,
-          ),
-          BlocProvider(
-            create: (context) => FullScreenAdsBloc(
-              interstitialAdLoader: ads.InterstitialAd.load,
-              rewardedAdLoader: ads.RewardedAd.load,
-              adsRetryPolicy: const AdsRetryPolicy(),
-              localPlatform: const LocalPlatform(),
-            )
-              ..add(const LoadInterstitialAdRequested())
-              ..add(const LoadRewardedAdRequested()),
-            lazy: false,
-          ),
-        ],
-        child: const AppView(),
-      ),
+            BlocProvider(
+              create: (context) => AnalyticsBloc(
+                analyticsRepository: _analyticsRepository,
+                userRepository: _userRepository,
+              ),
+              lazy: false,
+            ),
+          ],
+          child: MultiProvider(
+            providers: [
+              Provider(
+                create: (context) => FullScreenAdsStore(
+                  adsRetryPolicy: const AdsRetryPolicy(),
+                  interstitialAdLoader: ads.InterstitialAd.load,
+                  rewardedAdLoader: ads.RewardedAd.load,
+                  localPlatform: const LocalPlatform(),
+                )
+                  ..loadInterstitialAd()
+                  ..loadRewardedAd(),
+                lazy: false,
+              )
+            ],
+            child: const AppView(),
+          )),
     );
   }
 }

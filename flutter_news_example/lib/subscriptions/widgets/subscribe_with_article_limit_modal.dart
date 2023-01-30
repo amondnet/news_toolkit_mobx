@@ -3,6 +3,7 @@ import 'package:app_ui/app_ui.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_news_example/ads/ads.dart';
+import 'package:flutter_news_example/ads/store/full_screen_ads_store.dart';
 import 'package:flutter_news_example/analytics/analytics.dart';
 import 'package:flutter_news_example/app/app.dart';
 import 'package:flutter_news_example/article/article.dart';
@@ -127,9 +128,8 @@ class _SubscribeWithArticleLimitModalState
                   key: const Key(
                     'subscribeWithArticleLimitModal_watchVideoButton',
                   ),
-                  onPressed: () => context
-                      .read<FullScreenAdsBloc>()
-                      .add(const ShowRewardedAdRequested()),
+                  onPressed: () =>
+                      context.read<FullScreenAdsStore>().showRewardedAd(),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

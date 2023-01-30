@@ -130,7 +130,8 @@
     "xcworkspace",
     "xxlg",
     "xxxlg",
-    "xxxs"
+    "xxxs",
+    "mobx"
   ],
   "ignorePaths": [
     ".github/workflows/**",
