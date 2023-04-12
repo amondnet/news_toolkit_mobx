@@ -3,11 +3,14 @@ import 'package:article_repository/article_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:{{project_name.snakeCase()}}/ads/ads.dart';
+import 'package:{{project_name.snakeCase()}}/ads/store/full_screen_ads_store.dart';
 import 'package:{{project_name.snakeCase()}}/app/app.dart';
 import 'package:{{project_name.snakeCase()}}/article/article.dart';
 import 'package:{{project_name.snakeCase()}}/l10n/l10n.dart';
 import 'package:{{project_name.snakeCase()}}/subscriptions/subscriptions.dart';
+import 'package:mobx/mobx.dart';
 import 'package:news_blocks_ui/news_blocks_ui.dart';
 import 'package:share_launcher/share_launcher.dart';
 
@@ -65,7 +68,7 @@ class ArticleView extends StatefulWidget {
 class _ArticleViewState extends State<ArticleView> {
   @override
   void initState() {
-    context.read<FullScreenAdsBloc>().add(const ShowInterstitialAdRequested());
+    context.read<FullScreenAdsStore>().showInterstitialAd();
     super.initState();
   }
 
@@ -168,15 +171,16 @@ class HasWatchedRewardedAdListener extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<FullScreenAdsBloc, FullScreenAdsState>(
-      listener: (context, state) {
-        if (state.earnedReward != null) {
-          context.read<ArticleBloc>().add(const ArticleRewardedAdWatched());
-        }
+    return ReactionBuilder(
+      builder: (context) {
+        return reaction((_) => context.read<FullScreenAdsStore>().earnedReward,
+            (earnedReward) {
+          if (earnedReward != null) {
+            context.read<ArticleBloc>().add(const ArticleRewardedAdWatched());
+          }
+        });
       },
-      listenWhen: (previous, current) =>
-          previous.earnedReward != current.earnedReward,
-      child: child,
+      child: child ?? Container(),
     );
   }
 }
