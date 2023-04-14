@@ -25,6 +25,7 @@ ArticleState _$ArticleStateFromJson(Map<String, dynamic> json) => ArticleState(
           json['hasReachedArticleViewsLimit'] as bool? ?? false,
       isPreview: json['isPreview'] as bool? ?? false,
       isPremium: json['isPremium'] as bool? ?? false,
+      showInterstitialAd: json['showInterstitialAd'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$ArticleStateToJson(ArticleState instance) =>
@@ -41,6 +42,7 @@ Map<String, dynamic> _$ArticleStateToJson(ArticleState instance) =>
       'hasReachedArticleViewsLimit': instance.hasReachedArticleViewsLimit,
       'isPreview': instance.isPreview,
       'isPremium': instance.isPremium,
+      'showInterstitialAd': instance.showInterstitialAd,
     };
 
 const _$ArticleStatusEnumMap = {

@@ -1,12 +1,10 @@
 import 'package:ads_consent_client/ads_consent_client.dart';
 import 'package:analytics_repository/analytics_repository.dart';
 import 'package:app_ui/app_ui.dart';
-import 'package:provider/provider.dart';
 import 'package:article_repository/article_repository.dart';
 import 'package:flow_builder/flow_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_news_example/ads/ads.dart';
 import 'package:flutter_news_example/ads/store/full_screen_ads_store.dart';
 import 'package:flutter_news_example/analytics/analytics.dart';
 import 'package:flutter_news_example/app/app.dart';
@@ -19,6 +17,7 @@ import 'package:news_blocks_ui/news_blocks_ui.dart';
 import 'package:news_repository/news_repository.dart';
 import 'package:notifications_repository/notifications_repository.dart';
 import 'package:platform/platform.dart';
+import 'package:provider/provider.dart';
 import 'package:user_repository/user_repository.dart';
 
 class App extends StatelessWidget {
@@ -64,12 +63,12 @@ class App extends StatelessWidget {
       ],
       child: MultiBlocProvider(
           providers: [
-            BlocProvider(
-              create: (_) => AppBloc(
+            Provider(
+              create: (_) => AppStore(
                 userRepository: _userRepository,
                 notificationsRepository: _notificationsRepository,
                 user: _user,
-              )..add(const AppOpened()),
+              )..openApp(),
             ),
             BlocProvider(create: (_) => ThemeModeBloc()),
             BlocProvider(
@@ -118,8 +117,9 @@ class AppView extends StatelessWidget {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: AuthenticatedUserListener(
+        // TODO(amondnet): change this
         child: FlowBuilder<AppStatus>(
-          state: context.select((AppBloc bloc) => bloc.state.status),
+          state: context.select((AppStore store) => store.status),
           onGeneratePages: onGenerateAppViewPages,
         ),
       ),
